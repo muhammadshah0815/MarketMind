@@ -1,7 +1,7 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-
+// todo: implement sentiment
     var item: Item? {
         didSet {
             title = item?.symbol
