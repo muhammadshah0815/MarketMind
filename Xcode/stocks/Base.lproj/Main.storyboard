@@ -40,27 +40,26 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="insetGrouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="JZ8-bX-Abc">
                                 <rect key="frame" x="0.0" y="92" width="414" height="770"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <button key="tableFooterView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="RXM-DT-WQQ">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="30"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <state key="normal" title="Add a stock to track">
+                                        <color key="titleColor" systemColor="systemBlueColor"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="addButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="MqK-u1-4x3"/>
+                                    </connections>
+                                </button>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="Zx5-ox-h24"/>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="6VY-fX-2MQ"/>
                                 </connections>
                             </tableView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RXM-DT-WQQ">
-                                <rect key="frame" x="138" y="433" width="138" height="30"/>
-                                <state key="normal" title="Add a stock to track">
-                                    <color key="titleColor" systemColor="systemBlueColor"/>
-                                </state>
-                                <connections>
-                                    <action selector="addButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="MqK-u1-4x3"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="JZ8-bX-Abc" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="2LN-L0-J8e"/>
-                            <constraint firstItem="RXM-DT-WQQ" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="GjW-4T-7rH"/>
-                            <constraint firstItem="RXM-DT-WQQ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="M2a-dC-iXX"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="JZ8-bX-Abc" secondAttribute="trailing" id="dTT-V6-l9F"/>
                             <constraint firstItem="JZ8-bX-Abc" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="duv-Cm-UiE"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="JZ8-bX-Abc" secondAttribute="bottom" id="n4b-d5-eqm"/>

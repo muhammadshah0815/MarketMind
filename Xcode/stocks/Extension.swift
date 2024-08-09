@@ -5,6 +5,7 @@ extension Double {
     var currency: String? {
         let nf = NumberFormatter()
         nf.numberStyle = .currency
+        nf.currencySymbol = "$"
         
         let number = NSNumber(value: self)
         

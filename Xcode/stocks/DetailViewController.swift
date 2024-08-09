@@ -1,7 +1,7 @@
 import UIKit
 
 class DetailViewController: UIViewController {
-// todo: implement sentiment
+
     var item: Item? {
         didSet {
             title = item?.symbol
@@ -19,7 +19,6 @@ class DetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
         setup()
     }
 
@@ -33,7 +32,6 @@ private extension DetailViewController {
     }
 
     func fetchData(_ symbol: String?) {
-
         spinner.startAnimating()
 
         let priceItems = item?.items
@@ -41,17 +39,8 @@ private extension DetailViewController {
         provider?.getDetail(symbol, completion: { (sections, image) in
             self.spinner.stopAnimating()
 
-            if let image = image {
-                let imageView = UIImageView()
-                imageView.contentMode = .scaleAspectFit
-                imageView.image = image
-
-                var frame = self.view.bounds
-                frame.size = image.size
-                imageView.frame = frame
-
-                self.tableview.tableHeaderView = imageView
-            }
+            // Remove any image from the header, ensuring no logo is displayed
+            self.tableview.tableHeaderView = nil
 
             var s = sections
             let priceSection = DetailSection(items: priceItems)
@@ -61,7 +50,6 @@ private extension DetailViewController {
             self.dataSource = s
             self.tableview.reloadData()
         })
-
     }
 
     func setup() {
@@ -87,8 +75,6 @@ private extension DetailViewController {
             spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
     }
-
-
 }
 
 extension DetailViewController: UITableViewDelegate {
@@ -96,32 +82,23 @@ extension DetailViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         let section = dataSource[indexPath.section]
 
-        guard
-            let item = section.items?[indexPath.row],
-            item.url != nil else { return false }
-
-        return true
+        return section.items?[indexPath.row].url != nil
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableview.deselectRow(at: indexPath, animated: true)
 
         let section = dataSource[indexPath.section]
-        if
-            let item = section.items?[indexPath.row],
-            let url = item.url {
-                UIApplication.shared.open(url)
+        if let item = section.items?[indexPath.row], let url = item.url {
+            UIApplication.shared.open(url)
         }
     }
-
 }
 
 extension DetailViewController: UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let s = dataSource[section]
-
-        return s.header
+        return dataSource[section].header
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -129,8 +106,7 @@ extension DetailViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let s = dataSource[section]
-        return s.items?.count ?? 0
+        return dataSource[section].items?.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -139,56 +115,38 @@ extension DetailViewController: UITableViewDataSource {
         let section = dataSource[indexPath.section]
         if let item = section.items?[indexPath.row] {
             cell.textLabel?.text = item.title
-            cell.textLabel?.textColor = .white // White text color for main text
+            cell.textLabel?.textColor = .white
             cell.textLabel?.numberOfLines = 0
 
             cell.detailTextLabel?.text = item.subtitle
-            cell.detailTextLabel?.textColor = .white // White text color for subtitle
+            cell.detailTextLabel?.textColor = .white
             cell.detailTextLabel?.numberOfLines = 0
 
             cell.accessoryType = item.url == nil ? .none : .disclosureIndicator
-            cell.selectionStyle = .none // Optional: to remove cell highlight effect upon selection
+            cell.selectionStyle = .none
         }
 
         return cell
     }
-
-
 }
 
 struct DetailSection {
-
     var header: String?
     var items: [DetailItem]?
-
 }
 
 struct DetailItem {
-
     var subtitle: String?
     var title: String?
     var url: URL?
-
 }
 
 private extension Item {
-
     var items: [DetailItem] {
-        var items: [DetailItem] = []
-
-        items.append(
-            DetailItem(subtitle: "Price", title: quote?.price.currency)
-        )
-
-        items.append(
-            DetailItem(subtitle: "Change", title: quote?.change.displaySign)
-        )
-
-        items.append(
-            DetailItem(subtitle: "Percent Change", title: quote?.percent.displaySign)
-        )
-
+        var items = [DetailItem]()
+        items.append(DetailItem(subtitle: "Price", title: quote?.price.currency))
+        items.append(DetailItem(subtitle: "Change", title: quote?.change.displaySign))
+        items.append(DetailItem(subtitle: "Percent Change", title: quote?.percent.displaySign))
         return items
     }
-
 }
