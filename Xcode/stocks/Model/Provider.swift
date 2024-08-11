@@ -10,8 +10,8 @@ enum Provider: String {
                     switch result {
                     case .success(let sentiments):
                         let sentimentScores = sentiments.map { sentiment in
-                            DetailItem(subtitle: "Score: \(sentiment.score), Label: \(sentiment.label), Relevance: \(sentiment.relevance)",
-                                       title: "Sentiment for \(sentiment.ticker)",
+                            DetailItem(subtitle: "Score: \(sentiment.score)",
+                                       title: "Label: \(sentiment.label)",
                                        color: sentiment.score >= 0 ? .green : .red)
                         }
                         if let first = sentimentScores.first {

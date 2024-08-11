@@ -76,6 +76,7 @@ class DetailViewController: UIViewController {
     }
 
 
+
     func fetchData(_ symbol: String?) {
         guard let symbol = symbol else { return }
         spinner.startAnimating()
@@ -119,7 +120,6 @@ class DetailViewController: UIViewController {
             }
         }
     }
-
 
 
 
