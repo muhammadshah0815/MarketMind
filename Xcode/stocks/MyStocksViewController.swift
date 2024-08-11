@@ -274,32 +274,11 @@ private extension MyStocksViewController {
 
 extension MyStocksViewController: UITableViewDelegate {
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let frame = view.bounds
-        let view = UIView(frame: frame)
-
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(button)
-
-        NSLayoutConstraint.activate([
-            button.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
-            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-        ])
-
-        let s = dataSource[section]
-        let title = "   \(s.header ?? "")   "
-        button.setTitle(title, for: .normal)
-
-        button.backgroundColor = Theme.color
-        button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(sortList), for: .touchUpInside)
-        button.titleLabel?.font = .preferredFont(forTextStyle: .caption1)
-        button.layer.cornerRadius = 13
-        button.layer.masksToBounds = true
-
-        return view
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        //adding to keep stocks a bit lower than header
+        return 0.3
     }
+
 
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let s = dataSource[section]
