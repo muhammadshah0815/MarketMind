@@ -139,6 +139,7 @@ struct DetailItem {
     var subtitle: String?
     var title: String?
     var url: URL?
+    
 }
 
 private extension Item {

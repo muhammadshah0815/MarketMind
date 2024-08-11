@@ -6,6 +6,8 @@ extension Double {
         let nf = NumberFormatter()
         nf.numberStyle = .currency
         nf.currencySymbol = "$"
+        nf.minimumFractionDigits = 2
+        nf.maximumFractionDigits = 2
         
         let number = NSNumber(value: self)
         
