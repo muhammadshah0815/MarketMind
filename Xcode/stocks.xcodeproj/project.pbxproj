@@ -23,6 +23,7 @@
 		654B8CAE2480ABCF003A6024 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B8CAD2480ABCF003A6024 /* Item.swift */; };
 		65CF819524820A6200CE0C77 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CF819424820A6200CE0C77 /* Theme.swift */; };
 		65CF81992482CD0C00CE0C77 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CF81982482CD0C00CE0C77 /* Extension.swift */; };
+		718CC4372C68E82500C2CA05 /* SentimentFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718CC4362C68E82500C2CA05 /* SentimentFetcher.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		654B8CAD2480ABCF003A6024 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		65CF819424820A6200CE0C77 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		65CF81982482CD0C00CE0C77 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		718CC4362C68E82500C2CA05 /* SentimentFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentimentFetcher.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				654B8C9D248058B0003A6024 /* Finnhub.swift */,
 				654B8C9E248058B0003A6024 /* MyQuote.swift */,
 				654B8CAB2480AB93003A6024 /* Provider.swift */,
+				718CC4362C68E82500C2CA05 /* SentimentFetcher.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -181,6 +184,7 @@
 				654B8CA4248058B0003A6024 /* Finnhub.swift in Sources */,
 				654B8C8B248057EA003A6024 /* MyStocksViewController.swift in Sources */,
 				654B8CAC2480AB93003A6024 /* Provider.swift in Sources */,
+				718CC4372C68E82500C2CA05 /* SentimentFetcher.swift in Sources */,
 				654B8CA5248058B0003A6024 /* MyQuote.swift in Sources */,
 				65CF81992482CD0C00CE0C77 /* Extension.swift in Sources */,
 				654B8CAE2480ABCF003A6024 /* Item.swift in Sources */,

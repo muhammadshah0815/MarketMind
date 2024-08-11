@@ -1,3 +1,46 @@
+/*
+ Updated Project Directory Structure for MarketMind:
+ mathematica
+ Copy code
+ MarketMind/
+ ├── stocks/
+ │   ├── Info.swift
+ │   ├── AddStockViewController.swift
+ │   ├── AppDelegate.swift
+ │   ├── DetailViewController.swift
+ │   ├── Extension.swift
+ │   ├── Item.swift
+ │   ├── MyStocksViewController.swift
+ │   ├── SceneDelegate.swift
+ │   ├── Theme.swift
+ │   ├── UpdateLabel.swift
+ │   ├── UserDefault.swift
+ ├── Assets/
+ │   ├── LaunchScreen.storyboard
+ │   ├── Main.storyboard
+ ├── Model/
+ │   ├── Finnhub.swift
+ │   ├── MyQuote.swift
+ │   ├── Provider.swift
+ │   ├── SentimentFetcher.swift
+ File Functionalities:
+ Info.swift: Likely contains constants or configurations used across the app.
+ AddStockViewController.swift: Manages the UI and logic for adding new stock entries by the user.
+ AppDelegate.swift: Entry point of the app's lifecycle, handling initial setup.
+ DetailViewController.swift: Manages the display of detailed information for a selected stock, including sentiment analysis.
+ Extension.swift: Could include Swift extensions for enhancing existing types or classes.
+ Item.swift: Likely defines the data structure for stock items.
+ MyStocksViewController.swift: Controls the view that lists all the stocks the user is tracking.
+ SceneDelegate.swift: Handles scene lifecycle events in iOS 13 and later.
+ Theme.swift: Manages theming or styling for the app’s UI.
+ UpdateLabel.swift: Possibly a custom UILabel for displaying updated information.
+ UserDefault.swift: Manages saving and retrieving user preferences or settings.
+ Finnhub.swift, MyQuote.swift, Provider.swift, SentimentFetcher.swift: Handle data modeling and fetching of stock and sentiment data.
+ Assets:
+ LaunchScreen.storyboard: Configures the launch screen of the app.
+ Main.storyboard: Contains the main interface of the app.
+ */
+
 import UIKit
 
 class DetailViewController: UIViewController {
@@ -13,94 +56,117 @@ class DetailViewController: UIViewController {
 
     private var dataSource: [DetailSection] = []
 
-    private let tableview = UITableView(frame: .zero, style: .insetGrouped)
+    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
 
     private let spinner = UIActivityIndicatorView(style: .large)
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        initializeDataSections()
+    }
+    
+    func initializeDataSections() {
+        // Initialize the sentiment section with placeholder data
+        let initialSentimentItem = DetailItem(subtitle: "N/A", title: "Data Unavailable", sentiment: "Score: N/A, Label: Unknown, Relevance: N/A")
+        let sentimentSection = DetailSection(header: "Sentiments", items: [initialSentimentItem])
+        dataSource.append(sentimentSection)  // This ensures sentiment section is always at index 0
+
+        // Further sections can be added below
     }
 
-}
-
-private extension DetailViewController {
-
-    @objc
-    func close() {
-        self.dismiss(animated: true, completion: nil)
+    func fetchSentimentData(for ticker: String) {
+        print("Fetching sentiment data for: \(ticker)")
+        provider?.getSentiment(for: ticker) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let sentimentItem):
+                    print("Fetched sentiment: \(sentimentItem.subtitle)")
+                    self?.updateSentimentSection(with: [sentimentItem])
+                case .failure(let error):
+                    print("Error fetching sentiment data: \(error.localizedDescription)")
+                    let unavailableItem = DetailItem(subtitle: "N/A", title: "Data Unavailable", url: nil, color: .gray, sentiment: "N/A")
+                    self?.updateSentimentSection(with: [unavailableItem])
+                }
+            }
+        }
     }
 
-    func fetchData(_ symbol: String?) {
-        spinner.startAnimating()
-
-        let priceItems = item?.items
-
-        provider?.getDetail(symbol, completion: { (sections, image) in
-            self.spinner.stopAnimating()
-
-            // Remove any image from the header, ensuring no logo is displayed
-            self.tableview.tableHeaderView = nil
-
-            var s = sections
-            let priceSection = DetailSection(items: priceItems)
-            let index = s.count > 1 ? 1 : 0
-            s.insert(priceSection, at: index)
-
-            self.dataSource = s
-            self.tableview.reloadData()
-        })
+    func updateSentimentSection(with items: [DetailItem]) {
+        DispatchQueue.main.async { [weak self] in
+            if let index = self?.dataSource.firstIndex(where: { $0.header == "Sentiments" }) {
+                self?.dataSource[index].items = items
+                print("Updated existing sentiment section.")
+            } else {
+                let sentimentSection = DetailSection(header: "Sentiments", items: items)
+                self?.dataSource.append(sentimentSection)
+                print("Added new sentiment section.")
+            }
+            self?.tableView.reloadData()
+            print("Table view reloaded.")
+        }
     }
 
-    func setup() {
-        view.backgroundColor = .darkGray // Dark gray background
-
-        let button = Theme.closeButton
-        button.target = self
-        button.action = #selector(close)
+    private func setup() {
+        view.backgroundColor = .darkGray
+        let button = UIBarButtonItem(barButtonSystemItem: .close, target: self, action: #selector(close))
         navigationItem.rightBarButtonItem = button
 
-        tableview.dataSource = self
-        tableview.delegate = self
-        tableview.frame = view.bounds
-        tableview.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        tableview.backgroundColor = .darkGray // Dark gray table view background
-        tableview.separatorColor = .lightGray // Light gray separator color between cells
-        view.addSubview(tableview)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.frame = view.bounds
+        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        tableView.backgroundColor = .darkGray
+        tableView.separatorColor = .lightGray
+        view.addSubview(tableView)
 
         spinner.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(spinner)
         NSLayoutConstraint.activate([
             spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
+
+    @objc func close() {
+        dismiss(animated: true, completion: nil)
+    }
+
+    func fetchData(_ symbol: String?) {
+        guard let symbol = symbol else { return }
+
+        spinner.startAnimating()
+
+        provider?.getDetail(symbol, completion: { [weak self] (sections, image) in
+            guard let self = self else { return }
+            self.spinner.stopAnimating()
+
+            self.tableView.tableHeaderView = nil
+
+            var s = sections
+            let priceSection = DetailSection(header: "Stock Details", items: self.item?.items ?? [])
+            s.insert(priceSection, at: 0)
+
+            // Set up a sentiment section with default N/A values initially
+            let sentimentSection = DetailSection(
+                header: "Sentiments",
+                items: [DetailItem(subtitle: "N/A", title: "Data Unavailable", url: nil, color: .gray, sentiment: "Score: N/A, Label: Unknown, Relevance: N/A")]
+            )
+            s.append(sentimentSection)
+
+            self.dataSource = s
+            self.tableView.reloadData()
+
+            // Optionally, delay fetching sentiment data to ensure details load first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.fetchSentimentData(for: symbol)
+            }
+        })
+    }
+
 }
 
-extension DetailViewController: UITableViewDelegate {
-
-    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        let section = dataSource[indexPath.section]
-
-        return section.items?[indexPath.row].url != nil
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableview.deselectRow(at: indexPath, animated: true)
-
-        let section = dataSource[indexPath.section]
-        if let item = section.items?[indexPath.row], let url = item.url {
-            UIApplication.shared.open(url)
-        }
-    }
-}
-
-extension DetailViewController: UITableViewDataSource {
-
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return dataSource[section].header
-    }
-
+extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return dataSource.count
     }
@@ -109,24 +175,30 @@ extension DetailViewController: UITableViewDataSource {
         return dataSource[section].items?.count ?? 0
     }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "detail")
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return dataSource[section].header
+    }
 
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .subtitle, reuseIdentifier: "detailCell")
         let section = dataSource[indexPath.section]
         if let item = section.items?[indexPath.row] {
             cell.textLabel?.text = item.title
-            cell.textLabel?.textColor = .white
-            cell.textLabel?.numberOfLines = 0
-
-            cell.detailTextLabel?.text = item.subtitle
+            cell.textLabel?.textColor = item.color ?? .white
+            cell.detailTextLabel?.text = item.sentiment ?? item.subtitle
             cell.detailTextLabel?.textColor = .white
-            cell.detailTextLabel?.numberOfLines = 0
-
-            cell.accessoryType = item.url == nil ? .none : .disclosureIndicator
             cell.selectionStyle = .none
+            cell.accessoryType = item.url != nil ? .disclosureIndicator : .none
         }
-
         return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let section = dataSource[indexPath.section]
+        if section.header == "Sentiments" {
+            // Optionally add action on sentiment cell tap
+        }
     }
 }
 
@@ -139,7 +211,8 @@ struct DetailItem {
     var subtitle: String?
     var title: String?
     var url: URL?
-    
+    var color: UIColor?
+    var sentiment: String? // New field for sentiment data
 }
 
 private extension Item {

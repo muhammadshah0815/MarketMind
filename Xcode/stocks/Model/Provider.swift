@@ -3,7 +3,29 @@ import UIKit
 enum Provider: String {
 
     case finnhub
-
+    
+    func getSentiment(for symbol: String, completion: @escaping (Result<DetailItem, Error>) -> Void) {
+            SentimentFetcher.shared.fetchSentiment(for: symbol) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let sentiments):
+                        let sentimentScores = sentiments.map { sentiment in
+                            DetailItem(subtitle: "Score: \(sentiment.score), Label: \(sentiment.label), Relevance: \(sentiment.relevance)",
+                                       title: "Sentiment for \(sentiment.ticker)",
+                                       color: sentiment.score >= 0 ? .green : .red)
+                        }
+                        if let first = sentimentScores.first {
+                            completion(.success(first))
+                        } else {
+                            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No sentiment data available"])))
+                        }
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+            }
+        }
+    
     func getDetail(_ symbol: String?, completion: @escaping ([DetailSection], UIImage?) -> Void) {
         switch self {
         case .finnhub:
