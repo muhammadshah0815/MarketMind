@@ -64,48 +64,64 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         setup()
         initializeDataSections()
+        tableView.reloadData()  // Make sure to reload with the initial data
     }
+
     
     func initializeDataSections() {
-        // Initialize the sentiment section with placeholder data
-        let initialSentimentItem = DetailItem(subtitle: "N/A", title: "Data Unavailable", sentiment: "Score: N/A, Label: Unknown, Relevance: N/A")
-        let sentimentSection = DetailSection(header: "Sentiments", items: [initialSentimentItem])
-        dataSource.append(sentimentSection)  // This ensures sentiment section is always at index 0
+        // Add a placeholder sentiment section from the start
+        let placeholderSentimentItem = DetailItem(subtitle: "Loading...", title: "Sentiment Analysis", sentiment: "Awaiting data...")
+        let sentimentSection = DetailSection(header: "Sentiments", items: [placeholderSentimentItem])
+        dataSource.append(sentimentSection)
+    }
 
-        // Further sections can be added below
+
+    func fetchData(_ symbol: String?) {
+        guard let symbol = symbol else { return }
+        spinner.startAnimating()
+
+        // Asynchronously fetch sentiment data
+        fetchSentimentData(for: symbol)
+
+        // Asynchronously fetch other details
+        provider?.getDetail(symbol, completion: { [weak self] sections, image in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                self.spinner.stopAnimating()
+
+                // Prepare other sections
+                let priceSection = DetailSection(header: "Stock Details", items: self.item?.items ?? [])
+                var updatedSections = [self.dataSource.first!]  // Start with the sentiment section
+                updatedSections.append(priceSection)  // Add price details
+                updatedSections.append(contentsOf: sections)  // Add additional fetched sections
+
+                self.dataSource = updatedSections
+                self.tableView.reloadData()
+            }
+        })
     }
 
     func fetchSentimentData(for ticker: String) {
-        print("Fetching sentiment data for: \(ticker)")
         provider?.getSentiment(for: ticker) { [weak self] result in
             DispatchQueue.main.async {
+                guard let self = self else { return }
+                let sentimentIndex = self.dataSource.firstIndex(where: { $0.header == "Sentiments" })!
+
                 switch result {
                 case .success(let sentimentItem):
-                    print("Fetched sentiment: \(sentimentItem.subtitle)")
-                    self?.updateSentimentSection(with: [sentimentItem])
+                    self.dataSource[sentimentIndex].items = [sentimentItem]
                 case .failure(let error):
-                    print("Error fetching sentiment data: \(error.localizedDescription)")
-                    let unavailableItem = DetailItem(subtitle: "N/A", title: "Data Unavailable", url: nil, color: .gray, sentiment: "N/A")
-                    self?.updateSentimentSection(with: [unavailableItem])
+                    let errorItem = DetailItem(subtitle: "Error", title: "Failed to load sentiment data", sentiment: error.localizedDescription)
+                    self.dataSource[sentimentIndex].items = [errorItem]
                 }
+
+                self.tableView.reloadSections([sentimentIndex], with: .automatic)
             }
         }
     }
 
-    func updateSentimentSection(with items: [DetailItem]) {
-        DispatchQueue.main.async { [weak self] in
-            if let index = self?.dataSource.firstIndex(where: { $0.header == "Sentiments" }) {
-                self?.dataSource[index].items = items
-                print("Updated existing sentiment section.")
-            } else {
-                let sentimentSection = DetailSection(header: "Sentiments", items: items)
-                self?.dataSource.append(sentimentSection)
-                print("Added new sentiment section.")
-            }
-            self?.tableView.reloadData()
-            print("Table view reloaded.")
-        }
-    }
+
+
 
     private func setup() {
         view.backgroundColor = .darkGray
@@ -132,37 +148,8 @@ class DetailViewController: UIViewController {
         dismiss(animated: true, completion: nil)
     }
 
-    func fetchData(_ symbol: String?) {
-        guard let symbol = symbol else { return }
+    
 
-        spinner.startAnimating()
-
-        provider?.getDetail(symbol, completion: { [weak self] (sections, image) in
-            guard let self = self else { return }
-            self.spinner.stopAnimating()
-
-            self.tableView.tableHeaderView = nil
-
-            var s = sections
-            let priceSection = DetailSection(header: "Stock Details", items: self.item?.items ?? [])
-            s.insert(priceSection, at: 0)
-
-            // Set up a sentiment section with default N/A values initially
-            let sentimentSection = DetailSection(
-                header: "Sentiments",
-                items: [DetailItem(subtitle: "N/A", title: "Data Unavailable", url: nil, color: .gray, sentiment: "Score: N/A, Label: Unknown, Relevance: N/A")]
-            )
-            s.append(sentimentSection)
-
-            self.dataSource = s
-            self.tableView.reloadData()
-
-            // Optionally, delay fetching sentiment data to ensure details load first
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.fetchSentimentData(for: symbol)
-            }
-        })
-    }
 
 }
 
