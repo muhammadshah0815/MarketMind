@@ -36,7 +36,7 @@ private extension AddStockViewController {
     }
 
     func loadPopularStocks() {
-        let popularSymbols: [String] = ["AAPL", "TSLA", "DIS", "MSFT", "SNAP", "UBER", "TWTR", "AMD", "FB", "LK", "AMZN", "SHOP"]
+        let popularSymbols: [String] = ["AAPL", "TSLA", "NVDA", "MSFT", "SNAP", "UBER", "TWTR", "AMD", "META", "AMZN", "SHOP"]
         dataSource = popularSymbols.dataSource
         tableView.reloadData()
     }

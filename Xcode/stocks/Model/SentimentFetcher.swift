@@ -9,7 +9,7 @@ struct Sentiment: Codable {
 
 class SentimentFetcher {
     static let shared = SentimentFetcher()
-    let apiKey = "H7UO9USCQ1MHJN2K"
+    let apiKey = "1LRQV7B7B2DZROYJ"
 
     private init() {}
 

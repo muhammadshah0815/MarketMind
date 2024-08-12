@@ -187,6 +187,41 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
             // Optionally add action on sentiment cell tap
         }
     }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerText = dataSource[section].header
+        let header = UILabel()
+        
+        // Configuring the header's appearance
+        header.text = headerText
+        header.textColor = .white
+        header.backgroundColor = .darkGray
+        header.textAlignment = .left
+        header.font = UIFont.systemFont(ofSize: 13, weight: .semibold)  // Set font size and weight to match default
+
+        // Applying padding
+        header.frame = CGRect(x: 5, y: 0, width: tableView.bounds.width - 30, height: 28)
+        
+        // Wrapping the label in a UIView for better control
+        let headerView = UIView()
+        headerView.addSubview(header)
+        header.translatesAutoresizingMaskIntoConstraints = false
+        headerView.backgroundColor = .darkGray
+
+        NSLayoutConstraint.activate([
+            header.leadingAnchor.constraint(equalTo: headerView.leadingAnchor, constant: 15),
+            header.trailingAnchor.constraint(equalTo: headerView.trailingAnchor, constant: -15),
+            header.topAnchor.constraint(equalTo: headerView.topAnchor),
+            header.bottomAnchor.constraint(equalTo: headerView.bottomAnchor)
+        ])
+        
+        return headerView
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 28  // Adjust height to match the default or your preferred size
+    }
+
 }
 
 struct DetailSection {
