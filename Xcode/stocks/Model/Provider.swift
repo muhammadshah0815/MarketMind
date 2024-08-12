@@ -193,7 +193,7 @@ private extension Finnhub.Profile {
             items.append(marketCapItem)
         }
 
-        let section = DetailSection(header: finnhubIndustry, items: items)
+        let section = DetailSection(header: "About Company", items: items)
 
         return section
     }
@@ -212,7 +212,7 @@ private extension Finnhub.Profile {
         let sharesItem = DetailItem(subtitle: string.joined(separator: Theme.separator), title: "\(shareOutstanding.fh_largeNumberDisplay ?? "")")
         items.append(sharesItem)
 
-        let section = DetailSection(header: exchange, items: items)
+        let section = DetailSection(header: "Issuance Details", items: items)
 
         return section
     }
@@ -279,7 +279,7 @@ private extension DetailSection {
         let items = news?.compactMap { $0.item }
         guard items?.count ?? 0 > 0 else { return nil }
 
-        let section = DetailSection(header: "news", items: items)
+        let section = DetailSection(header: "News", items: items)
 
         return section
     }

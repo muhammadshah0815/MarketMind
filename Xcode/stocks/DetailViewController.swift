@@ -71,10 +71,10 @@ class DetailViewController: UIViewController {
     func initializeDataSections() {
         // Add a placeholder sentiment section from the start
         let placeholderSentimentItem = DetailItem(subtitle: "Loading...", title: "Sentiment Analysis", sentiment: "Awaiting data...")
-        let sentimentSection = DetailSection(header: "Sentiments", items: [placeholderSentimentItem])
+        let sentimentSection = DetailSection(header: "Sentiment", items: [placeholderSentimentItem])
         dataSource.append(sentimentSection)
     }
-
+    
 
 
     func fetchData(_ symbol: String?) {
@@ -106,7 +106,7 @@ class DetailViewController: UIViewController {
         provider?.getSentiment(for: ticker) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
-                let sentimentIndex = self.dataSource.firstIndex(where: { $0.header == "Sentiments" })!
+                let sentimentIndex = self.dataSource.firstIndex(where: { $0.header == "Sentiment" })!
 
                 switch result {
                 case .success(let sentimentItem):
@@ -200,7 +200,7 @@ extension DetailViewController: UITableViewDelegate, UITableViewDataSource {
         header.font = UIFont.systemFont(ofSize: 13, weight: .semibold)  // Set font size and weight to match default
 
         // Applying padding
-        header.frame = CGRect(x: 5, y: 0, width: tableView.bounds.width - 30, height: 28)
+        header.frame = CGRect(x: 0, y: 0, width: tableView.bounds.width - 30, height: 28)
         
         // Wrapping the label in a UIView for better control
         let headerView = UIView()
